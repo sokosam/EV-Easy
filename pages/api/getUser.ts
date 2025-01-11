@@ -5,8 +5,9 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-const createUser = async (user_id : string) => {
+const getUser = async (user_id : string) => {
 
+    // Query supabase to see if from the table users select all where auth_user_id is equal to the current user_id
     const user_data =  await supabase.from('users').select("*").eq("auth_user_id", user_id).maybeSingle();
 
     if (!user_data.data){
@@ -30,5 +31,5 @@ const createUser = async (user_id : string) => {
     }
     else return user_data
 }
-export default createUser
+export default getUser
 

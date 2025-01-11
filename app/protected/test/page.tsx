@@ -3,7 +3,9 @@ import { createClient } from "@/utils/supabase/server";
 import { log } from "console";
 import { InfoIcon } from "lucide-react";
 import { redirect } from "next/navigation";
-import createUser from "@/app/createUser";
+import getUser from "@/pages/api/getUser";
+import { addHost, removeHost } from "@/pages/api/userNetwork";
+
 
 export default async function ProtectedPage() {
   const supabase = await createClient();
@@ -16,9 +18,8 @@ export default async function ProtectedPage() {
     return redirect("/sign-in");
   }
 
-  const user_data = await createUser(user.id)
-
-
+  addHost(user.id, "testHost")
+  let user_data = await getUser(user.id)
   console.log(user_data)
 
   return (
