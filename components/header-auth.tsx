@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { createClient } from "@/utils/supabase/server";
+import Image from 'next/image'
 
 export default async function AuthButton() {
   const supabase = await createClient();
@@ -49,20 +50,28 @@ export default async function AuthButton() {
     );
   }
   return user ? (
-    <div className="flex items-center gap-4">
-      Hey, {user.email}!
-      <form action={signOutAction}>
-        <Button type="submit" variant={"outline"}>
-          Sign out
-        </Button>
-      </form>
+    <div className="flex flex-row w-[100%] items-center justify-between border-b p-2">
+      <Image src="/TransparentEZEVLogo.png"
+          width={100}
+          height={100}
+          alt="EZEV Secondary Icon"
+          className="ml-2"
+       />
+      <div className="flex flex-row mr-3 items-center">
+        <p className="mr-7">Hey, {user.email}!</p>
+        <form action={signOutAction}>
+          <Button type="submit" variant={"outline"}>
+            Sign out
+          </Button>
+        </form>
+      </div>
     </div>
   ) : (
-    <div className="flex gap-2">
-      <Button asChild size="sm" variant={"outline"}>
+    <div className="flex flex-row w-[100%] justify-end gap-2 border-b p-5">
+      <Button asChild size="sm" className="mr-2" variant={"outline"}>
         <Link href="/sign-in">Sign in</Link>
       </Button>
-      <Button asChild size="sm" variant={"default"}>
+      <Button asChild size="sm" className="mr-3" variant={"default"}>
         <Link href="/sign-up">Sign up</Link>
       </Button>
     </div>

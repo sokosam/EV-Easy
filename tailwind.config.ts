@@ -73,8 +73,12 @@ const config = {
         "accordion-up": "accordion-up 0.2s ease-out",
       },
     },
+
+    daisyui: {
+      themes: ["cupcake", "valentine", "cyberpunk"],
+    },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [require("tailwindcss-animate"), require('daisyui'),],
 } satisfies Config;
 
 export default config;
