@@ -55,7 +55,7 @@ export default async function Login(props: { searchParams: Promise<Message> }) {
             placeholder="you@example.com"
             required
             style={{
-              zIndex : 1,
+              zIndex : 2,
               backgroundColor: "#FFFFFF",
               border: "1px solid #CCCCCC",
               padding: "10px",
@@ -70,7 +70,7 @@ export default async function Login(props: { searchParams: Promise<Message> }) {
             placeholder="Your password"
             required
             style={{
-              zIndex : 1,
+              zIndex : 2,
               backgroundColor: "#FFFFFF",
               border: "1px solid #CCCCCC",
               padding: "10px",
@@ -80,7 +80,7 @@ export default async function Login(props: { searchParams: Promise<Message> }) {
             pendingText="Signing In..."
             formAction={signInAction}
             style={{
-              zIndex: 1,
+              zIndex: 2,
               backgroundColor: "#7FCD91",
               color: "#4D4646",
               padding: "10px",
@@ -113,7 +113,7 @@ export default async function Login(props: { searchParams: Promise<Message> }) {
         <Link
           href="/sign-up"
           style={{
-            zIndex: 1,
+            zIndex: 2,
             backgroundColor: "#FFFFFF",
             color: "#7FCD91",
             padding: "10px 20px",
@@ -127,7 +127,7 @@ export default async function Login(props: { searchParams: Promise<Message> }) {
           Sign Up
         </Link>
 
-        <BackgroundLines >
+        <BackgroundLines className="" >
           
           <p className="">
 
