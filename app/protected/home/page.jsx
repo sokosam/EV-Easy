@@ -43,7 +43,7 @@ function page () {
 
         if (data.user){
             console.log(data.user.id)
-            const response = await fetch('/api/createHost', {
+            const response = await fetch('/api/getUser', {
               method: 'POST',
               body: JSON.stringify({data: {user_id: data.user.id}}),
               headers: {
@@ -51,15 +51,24 @@ function page () {
               }
             });
             console.log("test")
-            console.log(await response.json());
+            const responseData = await response.json()
+            console.log(responseData);
 
-            const user_data = await response.json().data;
+            const user_data = responseData.data;
+            console.log(user_data);
 
             let stations = []
 
             if (user_data) {    
-                for (let name in user_data.data.names) {
-                  let station = await getStationsFromOwner(user_data.data.names[name])
+                for (let name in user_data.names) {
+                  const response2 = await fetch('/api/hostNetwork', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({data: {owner: user_data.names[name]}})
+                  }); //getStationsFromOwner(user_data.data.names[name])
+                  const station = await response2.json();
                   if (station){
                   for (let s of station) {
                     stations.push(s)

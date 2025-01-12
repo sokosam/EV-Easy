@@ -89,7 +89,7 @@ export default async function Login(props: { searchParams: Promise<Message> }) {
               fontWeight: "bold",
             }}
           >
-            Sign In
+             Sign In
           </SubmitButton>
         </form>
       </div>
