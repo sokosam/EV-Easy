@@ -31,5 +31,19 @@ const getUser = async (user_id : string) => {
     }
     else return user_data
 }
-export default getUser
+
+
+import type { NextApiRequest, NextApiResponse } from 'next';
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  switch (req.method) {
+    case 'POST':
+      console.log(req.body)
+      const data = req.body;
+      const user = await getUser(data.data.user_id);
+      res.status(200).json( user);
+      break;
+  }
+}
+
 

@@ -16,9 +16,7 @@ const createUser = async (user_id : string) => {
       .insert([
         {
           auth_user_id: user_id,
-          names: [], // Assuming names is an array field
-          carbon_saved: 0,
-          reserved: ""
+          names: "", // Assuming names is an array field
         },
       ])
       .select('').maybeSingle(); // Use .select('*') to return the inserted row

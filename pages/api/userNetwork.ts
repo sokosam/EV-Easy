@@ -91,3 +91,31 @@ export const removeHost = async (user_id: string, hostToRemove: string) => {
         return null;
     }
 }
+
+
+import type { NextApiRequest, NextApiResponse } from 'next';
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  switch (req.method) {
+    case 'POST':
+      console.log(req.body)
+      const data = req.body;
+      const user = await addHost(data.data.user_id , data.data.newHost);
+      if (!user){
+            res.status(200).json({error: "Error adding host!"});
+            return
+      }
+      res.status(200).json( user);
+      break;
+    case 'DELETE':
+        console.log(req.body)
+        const data2 = req.body;
+        const user2 = await removeHost(data2.data.user_id , data2.data.hostToRemove);
+        if (!user2){
+              res.status(200).json({error: "Error removing host!"});
+              return
+        }
+        res.status(200).json( user2);
+        break
+  }
+}
