@@ -1,0 +1,63 @@
+/* lightning.css */
+.lightning-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* Ensures it doesn't block interactions with other elements */
+  }
+  
+  .lightning-strike {
+    position: absolute;
+    top: -10%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 0;
+    background: yellow;
+    box-shadow: 0 0 20px yellow;
+    animation: strike 0.6s ease-out forwards;
+  }
+  
+  .lightning-strike::before,
+  .lightning-strike::after {
+    content: '';
+    position: absolute;
+    width: 4px;
+    height: 50px;
+    background: yellow;
+    box-shadow: 0 0 20px yellow;
+  }
+  
+  .lightning-strike::before {
+    top: 50px;
+    left: -20px;
+    transform: rotate(-30deg);
+  }
+  
+  .lightning-strike::after {
+    top: 100px;
+    left: 20px;
+    transform: rotate(30deg);
+  }
+  
+  /* Keyframes for the strike animation */
+  @keyframes strike {
+    0% {
+      height: 0;
+      opacity: 0;
+    }
+    20% {
+      height: 150px;
+      opacity: 1;
+    }
+    80% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      height: 0;
+    }
+  }
+  

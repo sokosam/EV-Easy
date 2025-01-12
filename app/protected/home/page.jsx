@@ -1,9 +1,14 @@
 "use client"
 //import { warmFlightResponse } from 'next/dist/server/app-render/app-render';
 import React, { useEffect } from 'react'
+import Map from '../../../components/ui/googlemaps'
+import LightningBolt from '@/components/ui/lightning';
+
 
 const page = () => {
     let watchId;
+
+
 
     function success(position) {
         const coords = position.coords;
@@ -13,7 +18,7 @@ const page = () => {
     }
 
     function error(e) {
-        console.error(e);
+        console.log(e);
     }
 
     const options = {
@@ -39,7 +44,13 @@ const page = () => {
 
   return (
     <div className="h-screen">
-        <p>Home</p>
+        <div className='flex justify-center items-center'>
+            <h1 style={{fontSize: '4rem', marginBottom: '2rem'}}>Dashboard</h1>
+        </div>
+        <Map />
+
+        {/* Add LightningBolt to render it */}
+        <LightningBolt />
       
     </div>
   )

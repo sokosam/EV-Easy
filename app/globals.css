@@ -67,3 +67,22 @@
     @apply bg-background text-foreground;
   }
 }
+
+
+.gm-style-iw-ch {
+  display: none !important;
+}
+
+.gm-style-iw-chr {
+  max-height: 2.5rem;
+}
+
+
+.gm-style-iw gm-style-iw-c {
+  max-height: 700px !important;
+}
+
+
+.gm-style-iw-d {
+  margin-bottom: 1.5rem;
+}

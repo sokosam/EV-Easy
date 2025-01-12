@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { createClient } from "@/utils/supabase/server";
+import { ThemeSwitcher } from "./theme-switcher";
 import Image from 'next/image'
 
 export default async function AuthButton() {
@@ -64,6 +65,7 @@ export default async function AuthButton() {
             Sign out
           </Button>
         </form>
+        <ThemeSwitcher />
       </div>
     </div>
   ) : (
@@ -74,6 +76,7 @@ export default async function AuthButton() {
       <Button asChild size="sm" className="mr-3" variant={"default"}>
         <Link href="/sign-up">Sign up</Link>
       </Button>
+      <ThemeSwitcher />
     </div>
   );
 }

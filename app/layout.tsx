@@ -5,8 +5,10 @@ import { ThemeSwitcher } from "@/components/theme-switcher";
 import { hasEnvVars } from "@/utils/supabase/check-env-vars";
 import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
+import NavBar from "@/components/navbar";
 import Link from "next/link";
 import "./globals.css";
+import { useEffect } from "react";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -28,6 +30,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
   return (
     <html lang="en" className={geistSans.className} suppressHydrationWarning>
       <body className="bg-background text-foreground">
@@ -42,7 +45,6 @@ export default function RootLayout({
           <main className="min-h-screen flex flex-col items-center">
             <div className="flex-1 w-full flex flex-col gap-20 items-center">
                   {!hasEnvVars ? <EnvVarWarning /> : <HeaderAuth />}
-              <NavBar />
               <div className="flex flex-col gap-20 max-w-5xl p-5">
                 {children}
               </div>
