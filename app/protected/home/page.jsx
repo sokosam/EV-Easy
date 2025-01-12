@@ -1,114 +1,291 @@
-"use client"
-import React, { use, useEffect, useState } from 'react'
-import Map from '../../../components/ui/googlemaps'
-import LightningBolt from '@/components/ui/lightning';
+"use client";
+import React, { useEffect, useState } from "react";
+import Map from "../../../components/ui/googlemaps";
+import LightningBolt from "@/components/ui/lightning";
 import getUser from "@/pages/api/getUser";
 import { createClient } from "@/utils/supabase/client";
-function page () {
-    let watchId;
+import "./buffer.css";
+import { Image } from "lucide-react";
 
+function Page() {
+  let watchId;
+  const [position, setPosition] = useState(null);
+  const [stations, setStations] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [followedCompanies, setFollowedCompanies] = useState([]);
+  const [newHost, setNewHost] = useState("");
 
-    function success(position) {
-        const coords = position.coords;
-        const latitude = coords.latitude;
-        const longitude = coords.longitude;
-        console.log("Current Position:", coords);
+  function success(position) {
+    const coords = position.coords;
+    const latitude = coords.latitude;
+    const longitude = coords.longitude;
+    console.log("Latitude:", latitude, "Longitude:", longitude);
+    setPosition({ latitude: latitude, longitude: longitude });
+    console.log("Current Position:", coords);
+  }
+
+  function error(e) {
+    console.log(e);
+  }
+
+  const options = {
+    enableHighAccuracy: false,
+    timeout: 30000,
+    maximumAge: 0,
+  };
+
+  function startWatchingLocation() {
+    watchId = navigator.geolocation.watchPosition(success, error, options);
+  }
+
+  function stopWatchingLocation() {
+    if (watchId) {
+      navigator.geolocation.clearWatch(watchId);
+      watchId = null;
     }
+  }
 
-    function error(e) {
-        console.log(e);
+
+  const handleDeleteHost = async (hostId) => {
+    try {
+      const supabase = createClient('your-supabase-url', 'your-supabase-key');
+      const { data, error } = await supabase
+        .from('')
+        .delete()
+        .eq('host_id', hostId);
+
+      if (error) {
+        console.error('Error deleting host:', error);
+      } else {
+        setFollowingHosts(followingHosts.filter(host => host.id !== hostId));
+      }
+    } catch (error) {
+      console.error('Error deleting host:', error);
     }
+  };
 
-    const options = {
-        enableHighAccuracy: false,
-        timeout: 30000,
-        maximumAge: 0,
-      };
-    
-    function startWatchingLocation() {
-        watchId = navigator.geolocation.watchPosition(success, error, options);
-    }
+  async function getStationsForUser() {
+    const supabase = await createClient();
+    const { data, error } = await supabase.auth.getUser();
+    console.log(data);
 
-    function stopWatchingLocation () {
-        if (watchId) {
-            navigator.geolocation.clearWatch(watchId);
-            watchId = null;
-        }
-    }
+    if (data.user) {
+      console.log(data.user.id);
+      const response = await fetch("/api/getUser", {
+        method: "POST",
+        body: JSON.stringify({ data: { user_id: data.user.id } }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const responseData = await response.json();
+      console.log(responseData);
 
-    async function getStationsForUser() {
-        const supabase = await createClient();
-        const { data, error } = await supabase.auth.getUser();
-        console.log(data);
+      const user_data = responseData.data;
+      console.log(user_data);
 
-        if (data.user){
-            console.log(data.user.id)
-            const response = await fetch('/api/getUser', {
-              method: 'POST',
-              body: JSON.stringify({data: {user_id: data.user.id}}),
-              headers: {
-                'Content-Type': 'application/json'
-              }
-            });
-            console.log("test")
-            const responseData = await response.json()
-            console.log(responseData);
+      let stations = [];
 
-            const user_data = responseData.data;
-            console.log(user_data);
-
-            let stations = []
-
-            if (user_data) {    
-                for (let name in user_data.names) {
-                  const response2 = await fetch('/api/hostNetwork', {
-                    method: 'POST',
-                    headers: {
-                      'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({data: {owner: user_data.names[name]}})
-                  }); //getStationsFromOwner(user_data.data.names[name])
-                  const station = await response2.json();
-                  if (station){
-                  for (let s of station) {
-                    stations.push(s)
-                  }
-                }
+      if (user_data) {
+        setFollowedCompanies(user_data.names);
+        for (let name in user_data.names) {
+          const response2 = await fetch("/api/hostNetwork", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ data: { owner: user_data.names[name] } }),
+          });
+          const station = await response2.json();
+          if (station) {
+            for (let s of station) {
+              stations.push(s);
             }
-              } else {
-                console.error("Error fetching user data:", user_data?.error);
-            }
-    
-            console.log("Stations:", stations);
-            return stations;
-            
-  
           }
+        }
+      } else {
+        console.error("Error fetching user data:", user_data?.error);
+      }
+      if (stations.length > 0) {
+        setStations(stations);
+      } else {
+        const response = await fetch("/api/hostNetwork", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        let newStations = await response.json();
+        for (let s of newStations) {
+          stations.push(s);
+        }
+        setStations(stations);
+      }
 
-
+      console.log("Stations:", stations);
+      setLoading(false);
     }
+  }
 
-    useEffect(startWatchingLocation, []);
+  async function handleFollowHost() {
+    const supabase = await createClient();
+    const { data, error } = await supabase.auth.getUser();
+  
+    if (data?.user) {
+      try {
+        const response = await fetch("/api/userNetwork", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            data: { user_id: data.user.id, newHost },
+          }),
+        });
+  
+        const result = await response.json();
+        if (result.error) {
+          console.error("Error adding host:", result.error);
+          return;
+        }
+  
+        console.log("Host added successfully:", result);
+  
+        // Refresh stations and followed companies
+        setNewHost(""); // Clear the input
+        const updatedStations = await fetchStationsForFollowedCompanies();
+        setStations(updatedStations); // Trigger re-render of the map
+      } catch (err) {
+        console.error("Failed to add host:", err);
+      }
+    }
+  }
 
-    useEffect( () => {
-        getStationsForUser();
+  async function fetchStationsForFollowedCompanies() {
+    const supabase = await createClient();
+    const { data, error } = await supabase.auth.getUser();
 
-    }, []);
+    if (data?.user && followedCompanies.length > 0) {
+      try {
+        let updatedStations = [];
+
+        for (let company of followedCompanies) {
+          const response = await fetch("/api/hostNetwork", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ data: { owner: company } }),
+          });
+
+          const companyStations = await response.json();
+          if (companyStations) {
+            updatedStations = [...updatedStations, ...companyStations];
+          }
+        }
+
+        setStations(updatedStations); // Update stations state to refresh the map
+      } catch (err) {
+        console.error("Error fetching stations for followed companies:", err);
+      }
+    }
+  }
 
 
-    
+  useEffect(() => {
+    async function fetchStations() {
+      if (followedCompanies.length > 0) {
+        let updatedStations = [];
+        for (const company of followedCompanies) {
+          const response = await fetch("/api/hostNetwork", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ data: { owner: company } }),
+          });
+  
+          const companyStations = await response.json();
+          if (companyStations) {
+            updatedStations = [...updatedStations, ...companyStations];
+          }
+        }
+        setStations(updatedStations); // Update the state with the new stations
+      }
+    }
+    fetchStations();
+  }, [followedCompanies]); // Re-run when followedCompanies changes
+  
+
+  useEffect(() => {
+    startWatchingLocation();
+    getStationsForUser();
+
+    return () => stopWatchingLocation();
+  }, []);
+
   return (
     <div className="h-screen">
-        <div className='flex justify-center items-center'>
-            <h1 style={{fontSize: '4rem', marginBottom: '2rem' }}>Dashboard</h1>
-        </div>
-        <Map />
+      <div
+        className="flex flex-col justify-center items-center"
+        style={{ marginBottom: "10%" }}
+      >
+        <h1 style={{ fontSize: "4rem", marginBottom: "2rem" }}>Dashboard</h1>
+        <div className="flex flex-row space-x-8">
+          {/* Followed EV Hosts Section */}
+          <div>
+            <h2 className="text-xl font-bold">Followed EV Hosts</h2>
+            <ul>
+              {followedCompanies &&
+                followedCompanies.map((name, index) => (
+                  <li key={index}>
+                    <div className="flex flex-row items-center justify-center">
+                        <p className="mr-2">{name}</p>
+                        <a href=""><img src="/delete.svg" width={10} height={10} alt="delete icon"/></a>
+                    </div>
+                  </li>
+                ))}
+            </ul>
+          </div>
 
-        {/* Add LightningBolt to render it */}
-        <LightningBolt />
-      
+          {/* Follow a Host Section */}
+          <div style={{marginLeft: '5rem', marginRight: '5rem'}}>
+            <h2 className="text-center font-bold text-xl">Follow a Host</h2>
+            <div className="flex flex-row items-center space-x-2 mt-4">
+              <input
+                className="border border-gray-300 rounded-md p-2 w-48 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                type="text"
+                placeholder="Host Name"
+                value={newHost}
+                onChange={(e) => setNewHost(e.target.value)}
+              />
+              <button
+                className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+                onClick={handleFollowHost}
+              >
+                Follow
+              </button>
+            </div>
+          </div>
+
+          {/* CO2 Emissions Saved Section */}
+          <div>
+            <h2 className="text-center font-bold text-xl">CO2 Emissions Saved</h2>
+          </div>
+        </div>
+      </div>
+
+      {/* Render Map */}
+      {position && stations && <Map currentLocation={position} stations={stations} />}
+      {loading && (
+        <div className="buffer">
+          {Array.from({ length: 12 }).map((_, index) => (
+            <div key={index}></div>
+          ))}
+        </div>
+      )}
     </div>
-  )
+  );
 }
 
-export default page
+export default Page;

@@ -32,7 +32,6 @@ const getUser = async (user_id : string) => {
     else return user_data
 }
 
-
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {

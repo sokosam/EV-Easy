@@ -1,6 +1,6 @@
 import { signInAction } from "@/app/actions";
-import { FormMessage, Message } from "@/components/form-message";
 import { SubmitButton } from "@/components/submit-button";
+import { FormMessage, Message } from "@/components/form-message";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
@@ -16,25 +16,45 @@ export default async function Login(props: { searchParams: Promise<Message> }) {
       className="login-page"
       style={{
         display: "flex",
+        position: "relative", // Establish stacking context
+        zIndex: 3, // Higher than background lines
         height: "100vh",
         margin: 0,
         padding: 0,
         fontFamily: "Anta, sans-serif",
       }}
     >
+      {/* Black Backdrop */}
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          backgroundColor: "black",
+          zIndex: 0, // Lowest layer
+        }}
+      />
+
+      {/* Background Animation */}
+      <BackgroundLines />
+
       {/* Left Section: Login */}
       <div
         style={{
           flex: 1,
           backgroundColor: "#F5EAEA",
+          zIndex: 4, // Higher than background lines
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
           padding: "20px",
+          border: "2px solid #CCCCCC", // Added grey border
         }}
       >
-        <h1 className="text-3xl font-bold" style={{ color: "#4D4646" }}>
+        <h1 className="text-3xl font-bold" style={{ color: "#4D4646", zIndex: 5 }}>
           Login to Your Account
         </h1>
         <p className="text-sm mt-2" style={{ color: "#4D4646" }}>
@@ -43,6 +63,7 @@ export default async function Login(props: { searchParams: Promise<Message> }) {
         <form
           className="flex flex-col gap-4 mt-8"
           style={{
+            zIndex: 5,
             width: "100%",
             maxWidth: "400px",
           }}
@@ -55,10 +76,11 @@ export default async function Login(props: { searchParams: Promise<Message> }) {
             placeholder="you@example.com"
             required
             style={{
-              zIndex : 2,
+              zIndex: 5,
               backgroundColor: "#FFFFFF",
               border: "1px solid #CCCCCC",
               padding: "10px",
+              color: "#4D4646",
             }}
           />
           <Label htmlFor="password" style={{ color: "#4D4646" }}>
@@ -70,17 +92,18 @@ export default async function Login(props: { searchParams: Promise<Message> }) {
             placeholder="Your password"
             required
             style={{
-              zIndex : 2,
+              zIndex: 5,
               backgroundColor: "#FFFFFF",
               border: "1px solid #CCCCCC",
               padding: "10px",
+              color: "#4D4646",
             }}
           />
           <SubmitButton
             pendingText="Signing In..."
             formAction={signInAction}
             style={{
-              zIndex: 2,
+              zIndex: 5,
               backgroundColor: "#7FCD91",
               color: "#4D4646",
               padding: "10px",
@@ -89,7 +112,7 @@ export default async function Login(props: { searchParams: Promise<Message> }) {
               fontWeight: "bold",
             }}
           >
-             Sign In
+            Sign In
           </SubmitButton>
         </form>
       </div>
@@ -99,21 +122,24 @@ export default async function Login(props: { searchParams: Promise<Message> }) {
         style={{
           flex: 1,
           backgroundColor: "#7FCD91",
+          zIndex: 4,
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
           color: "#FFFFFF",
+          padding: "20px",
+          border: "2px solid #CCCCCC", // Added grey border
         }}
       >
         <h1 className="text-3xl font-bold">New Here?</h1>
-        <p className="text-lg mt-4 text-center" style={{ maxWidth: "300px" }}>
+        <p className="text-lg mt-4 text-center" style={{ maxWidth: "300px", zIndex: 5 }}>
           Sign up and let's get going places.
         </p>
         <Link
           href="/sign-up"
           style={{
-            zIndex: 2,
+            zIndex: 5,
             backgroundColor: "#FFFFFF",
             color: "#7FCD91",
             padding: "10px 20px",
@@ -123,17 +149,8 @@ export default async function Login(props: { searchParams: Promise<Message> }) {
             textDecoration: "none",
           }}
         >
-
           Sign Up
         </Link>
-
-        <BackgroundLines className="" >
-          
-          <p className="">
-
-          </p>
-        </BackgroundLines>
-
       </div>
     </div>
   );

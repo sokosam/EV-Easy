@@ -8,7 +8,7 @@ export const BackgroundLines = ({
   className,
   svgOptions,
 }: {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   className?: string;
   svgOptions?: {
     duration?: number;
@@ -16,7 +16,7 @@ export const BackgroundLines = ({
 }) => {
   return (
     <div style={{
-        zIndex : 0
+        zIndex : 1
     }
     }
       className={cn(

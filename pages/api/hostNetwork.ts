@@ -68,7 +68,7 @@ export const checkStationExist = async (name: string, owner: string) =>{
     }
 }
 
-export const addNewStation = async (name : string, max_capacity : number, cost_rate : number, current_users : number, latitude: string, longitude: string, carbon_saved : string,discount : number, owner : string ) =>{
+export const addNewStation = async (name : string, max_capacity : number, cost_rate : number, current_users : number, latitude: number, longitude: number, carbon_saved : string,discount : number, owner : string ) =>{
     try {
     if (await checkStationExist(name, owner))
     {
@@ -112,8 +112,8 @@ export const modifyStation = async (
     max_capacity?: number;
     cost_rate?: number;
     current_users?: number;
-    latitude?: string;
-    longitude?: string;
+    latitude?: number;
+    longitude?: number;
     carbon_saved?: string;
     discount?: number;
   }
