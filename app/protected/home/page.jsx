@@ -15,54 +15,74 @@ function Page() {
   const [followedCompanies, setFollowedCompanies] = useState([]);
   const [newHost, setNewHost] = useState("");
 
-  function success(position) {
-    const coords = position.coords;
-    const latitude = coords.latitude;
-    const longitude = coords.longitude;
-    console.log("Latitude:", latitude, "Longitude:", longitude);
-    setPosition({ latitude: latitude, longitude: longitude });
-    console.log("Current Position:", coords);
-  }
-
-  function error(e) {
-    console.log(e);
-  }
-
-  const options = {
-    enableHighAccuracy: false,
-    timeout: 30000,
-    maximumAge: 0,
-  };
-
-  function startWatchingLocation() {
-    watchId = navigator.geolocation.watchPosition(success, error, options);
-  }
-
-  function stopWatchingLocation() {
-    if (watchId) {
-      navigator.geolocation.clearWatch(watchId);
-      watchId = null;
-    }
-  }
-
-
-  const handleDeleteHost = async (hostId) => {
-    try {
-      const supabase = createClient('your-supabase-url', 'your-supabase-key');
-      const { data, error } = await supabase
-        .from('')
-        .delete()
-        .eq('host_id', hostId);
-
-      if (error) {
-        console.error('Error deleting host:', error);
-      } else {
-        setFollowingHosts(followingHosts.filter(host => host.id !== hostId));
+  async function handleFollowHost() {
+    const supabase = createClient();  
+    const { data, error } = await supabase.auth.getUser();
+  
+    if (data?.user) {
+      try {
+        const response = await fetch("/api/userNetwork", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            data: { user_id: data.user.id, newHost },
+          }),
+        });
+  
+        const result = await response.json();
+        if (result.error) {
+          console.error("Error adding host:", result.error);
+          return;
+        }
+  
+        console.log("Host added successfully:", result);
+  
+        // Refresh stations and followed companies
+        setNewHost(""); // Clear the input
+        const updatedStations = await fetchStationsForFollowedCompanies();
+        setStations(updatedStations); // Trigger re-render of the map
+      } catch (err) {
+        console.error("Failed to add host:", err);
       }
-    } catch (error) {
-      console.error('Error deleting host:', error);
     }
-  };
+  }
+
+  const handleUnfollowHost = async (host) => {
+    const supabase = createClient();  
+    const { data, error } = await supabase.auth.getUser();
+  
+    if (data?.user) {
+      try {
+        const response = await fetch("/api/userNetwork", {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            data: { user_id: data.user.id, host },
+          }),
+        });
+  
+        const result = await response.json();
+        if (result.error) {
+          console.error("Error adding host:", result.error);
+          return;
+        }
+  
+        console.log("Host added successfully:", result);
+  
+        // Refresh stations and followed companies
+        setNewHost(""); // Clear the input
+        const updatedStations = await fetchStationsForFollowedCompanies();
+        console.log(updatedStations)
+        setStations(updatedStations); // Trigger re-render of the map
+      } catch (err) {
+        console.error("Failed to remove host:", err);
+      }
+    }
+  }
 
   async function getStationsForUser() {
     const supabase = await createClient();
@@ -127,95 +147,76 @@ function Page() {
     }
   }
 
-  async function handleFollowHost() {
-    const supabase = await createClient();
-    const { data, error } = await supabase.auth.getUser();
-  
-    if (data?.user) {
-      try {
-        const response = await fetch("/api/userNetwork", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            data: { user_id: data.user.id, newHost },
-          }),
-        });
-  
-        const result = await response.json();
-        if (result.error) {
-          console.error("Error adding host:", result.error);
-          return;
-        }
-  
-        console.log("Host added successfully:", result);
-  
-        // Refresh stations and followed companies
-        setNewHost(""); // Clear the input
-        const updatedStations = await fetchStationsForFollowedCompanies();
-        setStations(updatedStations); // Trigger re-render of the map
-      } catch (err) {
-        console.error("Failed to add host:", err);
-      }
-    }
-  }
 
   async function fetchStationsForFollowedCompanies() {
     const supabase = await createClient();
     const { data, error } = await supabase.auth.getUser();
+    const response =  await fetch("/api/getUser", {
+      method: "POST",
+      body: JSON.stringify({ data: { user_id: data.user.id } }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const user = await response.json();
+    const names = user.data.names;
 
-    if (data?.user && followedCompanies.length > 0) {
-      try {
-        let updatedStations = [];
+    setFollowedCompanies(names);
 
-        for (let company of followedCompanies) {
-          const response = await fetch("/api/hostNetwork", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ data: { owner: company } }),
-          });
+    if (names){
+      let updatedStations = [];
+      for (let company of names) {
+        const response = await fetch("/api/hostNetwork", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ data: { owner: company } }),
+        });
 
-          const companyStations = await response.json();
-          if (companyStations) {
-            updatedStations = [...updatedStations, ...companyStations];
-          }
+        const companyStations = await response.json();
+        if (companyStations) {
+          updatedStations = [...updatedStations, ...companyStations];
         }
-
-        setStations(updatedStations); // Update stations state to refresh the map
-      } catch (err) {
-        console.error("Error fetching stations for followed companies:", err);
       }
+
+      setStations(updatedStations)
+    }
+
+  }
+
+  function success(position) {
+    const coords = position.coords;
+    const latitude = coords.latitude;
+    const longitude = coords.longitude;
+    console.log("Latitude:", latitude, "Longitude:", longitude);
+    setPosition({ latitude: latitude, longitude: longitude });
+    console.log("Current Position:", coords);
+  }
+
+  function error(e) {
+    console.log(e);
+  }
+
+  const options = {
+    enableHighAccuracy: false,
+    timeout: 30000,
+    maximumAge: 0,
+  };
+
+  function startWatchingLocation() {
+    watchId = navigator.geolocation.watchPosition(success, error, options);
+  }
+
+  function stopWatchingLocation() {
+    if (watchId) {
+      navigator.geolocation.clearWatch(watchId);
+      watchId = null;
     }
   }
 
 
-  useEffect(() => {
-    async function fetchStations() {
-      if (followedCompanies.length > 0) {
-        let updatedStations = [];
-        for (const company of followedCompanies) {
-          const response = await fetch("/api/hostNetwork", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ data: { owner: company } }),
-          });
-  
-          const companyStations = await response.json();
-          if (companyStations) {
-            updatedStations = [...updatedStations, ...companyStations];
-          }
-        }
-        setStations(updatedStations); // Update the state with the new stations
-      }
-    }
-    fetchStations();
-  }, [followedCompanies]); // Re-run when followedCompanies changes
-  
+
 
   useEffect(() => {
     startWatchingLocation();
@@ -241,7 +242,7 @@ function Page() {
                   <li key={index}>
                     <div className="flex flex-row items-center justify-center">
                         <p className="mr-2">{name}</p>
-                        <a href=""><img src="/delete.svg" width={10} height={10} alt="delete icon"/></a>
+                        <a className="cursor-pointer"><img className="cursor-pointer" src="/delete.svg" width={10} height={10} alt="delete icon" onClick={() => handleUnfollowHost(name)}/></a>
                     </div>
                   </li>
                 ))}

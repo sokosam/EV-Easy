@@ -64,7 +64,12 @@ export const removeHost = async (user_id: string, hostToRemove: string) => {
             console.log("Something went wrong!");
             return;
         }
-        
+        console.log(hostToRemove)
+        console.log(user_data.names);
+        // if (user_data.names[5]) {
+        //     console.log(user_data.names[5]);
+        //     console.log(user_data.names[5].length + " " + hostToRemove.length);
+        // }
         let index = user_data.names.indexOf(hostToRemove);
         if (index === -1) {
             console.log("Name does not exist");
@@ -110,7 +115,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     case 'DELETE':
         console.log(req.body)
         const data2 = req.body;
-        const user2 = await removeHost(data2.data.user_id , data2.data.hostToRemove);
+        const user2 = await removeHost(data2.data.user_id , data2.data.host);
         if (!user2){
               res.status(200).json({error: "Error removing host!"});
               return
