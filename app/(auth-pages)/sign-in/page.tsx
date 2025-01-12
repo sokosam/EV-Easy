@@ -4,41 +4,124 @@ import { SubmitButton } from "@/components/submit-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
+import "./LoginAnimate.css"; // Import the updated CSS
+
+
 
 export default async function Login(props: { searchParams: Promise<Message> }) {
   const searchParams = await props.searchParams;
+
   return (
-    <form className="flex-1 flex flex-col min-w-64">
-      <h1 className="text-2xl font-medium">Sign in</h1>
-      <p className="text-sm text-foreground">
-        Don't have an account?{" "}
-        <Link className="text-foreground font-medium underline" href="/sign-up">
-          Sign up
-        </Link>
-      </p>
-      <div className="flex flex-col gap-2 [&>input]:mb-3 mt-8">
-        <Label htmlFor="email">Email</Label>
-        <Input name="email" placeholder="you@example.com" required />
-        <div className="flex justify-between items-center">
-          <Label htmlFor="password">Password</Label>
-          <Link
-            className="text-xs text-foreground underline"
-            href="/forgot-password"
+    <div
+      className="login-page"
+      style={{
+        display: "flex",
+        height: "100vh",
+        margin: 0,
+        padding: 0,
+        fontFamily: "Anta, sans-serif",
+      }}
+    >
+      {/* Left Section: Login */}
+      <div
+        style={{
+          flex: 1,
+          backgroundColor: "#F5EAEA",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          padding: "20px",
+        }}
+      >
+        <h1 className="text-3xl font-bold" style={{ color: "#4D4646" }}>
+          Login to Your Account
+        </h1>
+        <p className="text-sm mt-2" style={{ color: "#4D4646" }}>
+          Enter your email and password to log in.
+        </p>
+        <form
+          className="flex flex-col gap-4 mt-8"
+          style={{
+            width: "100%",
+            maxWidth: "400px",
+          }}
+        >
+          <Label htmlFor="email" style={{ color: "#4D4646" }}>
+            Email
+          </Label>
+          <Input
+            name="email"
+            placeholder="you@example.com"
+            required
+            style={{
+              backgroundColor: "#FFFFFF",
+              border: "1px solid #CCCCCC",
+              padding: "10px",
+            }}
+          />
+          <Label htmlFor="password" style={{ color: "#4D4646" }}>
+            Password
+          </Label>
+          <Input
+            type="password"
+            name="password"
+            placeholder="Your password"
+            required
+            style={{
+              backgroundColor: "#FFFFFF",
+              border: "1px solid #CCCCCC",
+              padding: "10px",
+            }}
+          />
+          <SubmitButton
+            pendingText="Signing In..."
+            formAction={signInAction}
+            style={{
+              backgroundColor: "#7FCD91",
+              color: "#4D4646",
+              padding: "10px",
+              border: "none",
+              borderRadius: "5px",
+              fontWeight: "bold",
+            }}
           >
-            Forgot Password?
-          </Link>
-        </div>
-        <Input
-          type="password"
-          name="password"
-          placeholder="Your password"
-          required
-        />
-        <SubmitButton pendingText="Signing In..." formAction={signInAction}>
-          Sign in
-        </SubmitButton>
-        <FormMessage message={searchParams} />
+            Sign In
+          </SubmitButton>
+        </form>
       </div>
-    </form>
+
+      {/* Right Section: Sign Up */}
+      <div
+        style={{
+          flex: 1,
+          backgroundColor: "#7FCD91",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          color: "#FFFFFF",
+        }}
+      >
+        <h1 className="text-3xl font-bold">New Here?</h1>
+        <p className="text-lg mt-4 text-center" style={{ maxWidth: "300px" }}>
+          Sign up and let's get going places.
+        </p>
+        <Link
+          href="/sign-up"
+          style={{
+            backgroundColor: "#FFFFFF",
+            color: "#7FCD91",
+            padding: "10px 20px",
+            borderRadius: "5px",
+            fontWeight: "bold",
+            marginTop: "20px",
+            textDecoration: "none",
+          }}
+        >
+          Sign Up
+        </Link>
+      </div>
+    </div>
   );
 }

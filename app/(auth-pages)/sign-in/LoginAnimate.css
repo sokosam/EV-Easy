@@ -1,0 +1,58 @@
+/* Lightning bolt container */
+.lightning-bolt-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 0; /* Place it behind the form */
+  }
+  
+  /* Lightning bolt shape */
+  .lightning-bolt {
+    width: 650px; /* 30% wider */
+    height: 800px; /* Reduced to 80% height */
+    background-color: #f5eaea;
+    clip-path: polygon(
+      50% 0%,      /* Top point */
+      60% 30%,     /* Sharp diagonal to the right */
+      45% 30%,     /* Pull back to the left */
+      70% 100%,    /* Extend downward with a point at the bottom-right */
+      50% 80%,     /* Point inward for dynamic shape */
+      55% 60%      /* Final sharp point */
+    );
+    animation: scaleUpDown 3s infinite ease-in-out;
+    z-index: -1;
+    opacity: 0.9; /* Slight transparency */
+  }
+  
+  /* Lightning bolt shadow */
+  .lightning-bolt-shadow {
+    width: 650px; /* Match the main lightning bolt's width */
+    height: 800px; /* Match the main lightning bolt's height */
+    background-color: #7fcd91;
+    clip-path: polygon(
+      50% 0%,      /* Top point */
+      60% 30%,     /* Sharp diagonal to the right */
+      45% 30%,     /* Pull back to the left */
+      70% 100%,    /* Extend downward with a point at the bottom-right */
+      50% 80%,     /* Point inward for dynamic shape */
+      55% 60%      /* Final sharp point */
+    );
+    position: absolute;
+    top: 15px; /* Offset for shadow */
+    left: 15px;
+    animation: scaleUpDown 3s infinite ease-in-out;
+    opacity: 0.6; /* Shadow transparency */
+    z-index: -2;
+  }
+  
+  /* Animation for scaling up and down */
+  @keyframes scaleUpDown {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.1);
+    }
+  }
+  

@@ -23,6 +23,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/protected/home/page.jsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/protected/home/page.jsx", "app/protected/test/page.jsx", "pages/api/getUserId.js"],
   "exclude": ["node_modules"]
 }

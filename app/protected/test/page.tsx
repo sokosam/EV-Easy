@@ -1,45 +1,90 @@
+"use client"
 import FetchDataSteps from "@/components/tutorial/fetch-data-steps";
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@/utils/supabase/client";
 import { log } from "console";
 import { InfoIcon } from "lucide-react";
 import { redirect } from "next/navigation";
 import getUser from "@/pages/api/getUser";
 import { addHost, removeHost } from "@/pages/api/userNetwork";
 import { getStationsFromOwner } from "@/pages/api/hostNetwork";
+import { useEffect } from "react";
 
 
-export default async function ProtectedPage() {
-  const supabase = await createClient();
+export default  function ProtectedPage() {
+  // const supabase = await createClient();
+  useEffect(() => {
+    const fetchData = async () => {
+        const supabase = await createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+        // const user_data =  await supabase.from('users').select("*");
+        // console.log(user_data);
 
-  if (!user) {
-    return redirect("/sign-in");
-  }
+        const { data, error } = await supabase.auth.getUser();
+        console.log(data);
 
-  removeHost(user.id, "GM")
-  let user_data = await getUser(user.id)
-  let stations : any[] = []
+        if (data.user){
+          console.log(data.user.id)
+          const response = await fetch('/api/createHost', {
+            method: 'POST',
+            body: JSON.stringify({data: {user_id: data.user.id}}),
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+          console.log("test")
+          console.log(await response.json());
+          
+
+        }
+    };
+
+    fetchData();
+}, []);
+
+
+  // const {
+  //   data: { user },
+  // } = await supabase.auth.getUser();
+
+  // if (!user) {
+  //   return redirect("/sign-in");
+  // }
+
+  // removeHost(user.id, "GM")
+  // let user_data = await getUser(user.id)
+  // let stations : any[] = []
   
-  if (user_data && user_data.data) {    
-    for (let name in user_data.data.names) {
-      let station = await getStationsFromOwner(user_data.data.names[name])
-      if (station){
-      for (let s of station) {
-        stations.push(s)
-      }
-    }
-      // stations.push(station)
-    }
-  } else {
-    console.error("Error fetching user data:", user_data?.error);
-  }
+  // if (user_data && user_data.data) {    
+  //   for (let name in user_data.data.names) {
+  //     let station = await getStationsFromOwner(user_data.data.names[name])
+  //     if (station){
+  //     for (let s of station) {
+  //       stations.push(s)
+  //     }
+  //   }
+  //     // stations.push(station)
+  //   }
+  // } else {
+  //   console.error("Error fetching user data:", user_data?.error);
+  // }
+
+  // useEffect(() => {
+  //   testApiCall();
+  // }, []);
+
+  // async function testApiCall() {
+  //   const response = await fetch('/api/createHost', {
+  //     method: 'POST',
+  //     body: JSON.stringify({ }),
+  //   });
+  
+  //   console.log(response);
+  // }
+
+
 
   // let stations = await getStationsFromOwner("Tesla")
   // console.log(user_data)
-  console.log(stations)
   return (
     <div className="flex-1 w-full flex flex-col gap-12">
       <div className="w-full">
@@ -52,7 +97,6 @@ export default async function ProtectedPage() {
       <div className="flex flex-col gap-2 items-start">
         <h2 className="font-bold text-2xl mb-4">Your user details</h2>
         <pre className="text-xs font-mono p-3 rounded border max-h-32 overflow-auto">
-          {JSON.stringify(user, null, 2)}
         </pre>
       </div>
       <div>
