@@ -5,6 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { SmtpMessage } from "../smtp-message";
+import React from "react";
+import { BackgroundLines } from "@/components/ui/background-lines";
+
 
 export default async function Signup(props: {
   searchParams: Promise<Message>;
@@ -19,7 +22,10 @@ export default async function Signup(props: {
   }
 
   return (
+
     <>
+      
+    
       <form className="flex flex-col min-w-64 max-w-64 mx-auto">
         <h1 className="text-2xl font-medium">Sign up</h1>
         <p className="text-sm text text-foreground">

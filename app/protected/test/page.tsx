@@ -10,7 +10,7 @@ import { getStationsFromOwner } from "@/pages/api/hostNetwork";
 import { useEffect } from "react";
 
 
-export default  function ProtectedPage() {
+export default function ProtectedPage() {
   // const supabase = await createClient();
   useEffect(() => {
     const fetchData = async () => {
@@ -24,7 +24,7 @@ export default  function ProtectedPage() {
 
         if (data.user){
           console.log(data.user.id)
-          const response = await fetch('/api/createHost', {
+          const response = await fetch('/api/getUser', {
             method: 'POST',
             body: JSON.stringify({data: {user_id: data.user.id}}),
             headers: {

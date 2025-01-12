@@ -3,10 +3,9 @@ import React, { use, useEffect, useState } from 'react'
 import Map from '../../../components/ui/googlemaps'
 import LightningBolt from '@/components/ui/lightning';
 import getUser from "@/pages/api/getUser";
+import { createClient } from "@/utils/supabase/client";
 function page () {
     let watchId;
-    const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY );
-
 
 
     function success(position) {
@@ -38,37 +37,46 @@ function page () {
     }
 
     async function getStationsForUser() {
-        const { data: session, error } = await supabase.auth.getSession();
-        if (error) {
-            console.error("Error fetching session:", error);
-        } else {
-            console.log("Session user:", session.user);
-        }
-        const user_id = await fetch("/api/getUserId").then((res) => res.json()); 
-        console.log("User ID:", user_id);
-        if (!user_id) {
-            console.error("Error fetching user ID");
-            return;
-        }   
-        const user_data = await getUser(user_id);
+        const supabase = await createClient();
+        const { data, error } = await supabase.auth.getUser();
+        console.log(data);
 
-        let stations = []
-
-        if (user_data && user_data.data) {    
-            for (let name in user_data.data.names) {
-              let station = await getStationsFromOwner(user_data.data.names[name])
-              if (station){
-              for (let s of station) {
-                stations.push(s)
+        if (data.user){
+            console.log(data.user.id)
+            const response = await fetch('/api/createHost', {
+              method: 'POST',
+              body: JSON.stringify({data: {user_id: data.user.id}}),
+              headers: {
+                'Content-Type': 'application/json'
               }
-            }
-        }
-          } else {
-            console.error("Error fetching user data:", user_data?.error);
-        }
+            });
+            console.log("test")
+            console.log(await response.json());
 
-        console.log("Stations:", stations);
-        return stations;
+            const user_data = await response.json().data;
+
+            let stations = []
+
+            if (user_data) {    
+                for (let name in user_data.data.names) {
+                  let station = await getStationsFromOwner(user_data.data.names[name])
+                  if (station){
+                  for (let s of station) {
+                    stations.push(s)
+                  }
+                }
+            }
+              } else {
+                console.error("Error fetching user data:", user_data?.error);
+            }
+    
+            console.log("Stations:", stations);
+            return stations;
+            
+  
+          }
+
+
     }
 
     useEffect(startWatchingLocation, []);

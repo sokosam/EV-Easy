@@ -1,14 +1,14 @@
 import { createClient } from '@supabase/supabase-js';
+import { createServerClient } from '@supabase/ssr';
 
 // Initialize the Supabase client
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-const getUser = async (user_id : string) => {
-
+const createUser = async (user_id : string) => {
     // Query supabase to see if from the table users select all where auth_user_id is equal to the current user_id
-    const user_data =  await supabase.from('users').select("*").eq("auth_user_id", user_id).maybeSingle();
+    const user_data =  await supabase.from('users').select("").eq("auth_user_id", user_id).maybeSingle();
 
     if (!user_data.data){
       const { data: newUser, error: insertError } = await supabase
@@ -16,21 +16,22 @@ const getUser = async (user_id : string) => {
       .insert([
         {
           auth_user_id: user_id,
-          names: [], // Assuming `names` is an array field
+          names: [], // Assuming names is an array field
           carbon_saved: 0,
           reserved: ""
         },
       ])
-      .select('*').maybeSingle(); // Use `.select('*')` to return the inserted row
-  
+      .select('').maybeSingle(); // Use .select('*') to return the inserted row
+
     if (insertError) {
       console.error('Error creating user:', insertError.message);
-      return null;
+      return insertError;
     }
     return user_data
     }
     else return user_data
 }
+<<<<<<< HEAD
 
 
 import type { NextApiRequest, NextApiResponse } from 'next';
@@ -46,4 +47,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 }
 
+=======
+>>>>>>> 4bafb1e (curr)
 
+
+
+import type { NextApiRequest, NextApiResponse } from 'next';
+import { create } from 'domain';
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  switch (req.method) {
+    case 'POST':
+      console.log("HELLO:", req.body)
+      const data = req.body;
+      const user = await createUser(data.data.user_id);
+      res.status(200).json( user);
+      break;
+  }
+}

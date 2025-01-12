@@ -5,8 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import "./LoginAnimate.css"; // Import the updated CSS
-
-
+import React from "react";
+import { BackgroundLines } from "@/components/ui/background-lines";
 
 export default async function Login(props: { searchParams: Promise<Message> }) {
   const searchParams = await props.searchParams;
@@ -55,6 +55,7 @@ export default async function Login(props: { searchParams: Promise<Message> }) {
             placeholder="you@example.com"
             required
             style={{
+              zIndex : 1,
               backgroundColor: "#FFFFFF",
               border: "1px solid #CCCCCC",
               padding: "10px",
@@ -69,6 +70,7 @@ export default async function Login(props: { searchParams: Promise<Message> }) {
             placeholder="Your password"
             required
             style={{
+              zIndex : 1,
               backgroundColor: "#FFFFFF",
               border: "1px solid #CCCCCC",
               padding: "10px",
@@ -78,6 +80,7 @@ export default async function Login(props: { searchParams: Promise<Message> }) {
             pendingText="Signing In..."
             formAction={signInAction}
             style={{
+              zIndex: 1,
               backgroundColor: "#7FCD91",
               color: "#4D4646",
               padding: "10px",
@@ -110,6 +113,7 @@ export default async function Login(props: { searchParams: Promise<Message> }) {
         <Link
           href="/sign-up"
           style={{
+            zIndex: 1,
             backgroundColor: "#FFFFFF",
             color: "#7FCD91",
             padding: "10px 20px",
@@ -119,8 +123,17 @@ export default async function Login(props: { searchParams: Promise<Message> }) {
             textDecoration: "none",
           }}
         >
+
           Sign Up
         </Link>
+
+        <BackgroundLines >
+          
+          <p className="">
+
+          </p>
+        </BackgroundLines>
+
       </div>
     </div>
   );
