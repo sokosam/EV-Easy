@@ -34,7 +34,7 @@ const Map = ({currentLocation, stations}: {currentLocation: Location, stations: 
             // map options
             const mapOptions: google.maps.MapOptions = {
                 center: position,
-                zoom: 17,
+                zoom: 14,
                 // mapId: 'Map.DEMO_MAP_ID',
             }
 
