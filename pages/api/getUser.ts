@@ -25,7 +25,7 @@ const getUser = async (user_id : string) => {
   
     if (insertError) {
       console.error('Error creating user:', insertError.message);
-      return insertError;
+      return null;
     }
     return user_data
     }

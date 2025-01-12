@@ -29,8 +29,9 @@ export const addHost = async (user_id : string, newHost : string) =>{
         return 
     }
 
-    for(const name in user_data.names){
-        if (name == newHost){
+    for(let name in user_data.names){
+        // console.log(user_data.names[name]);  
+        if (user_data.names[name] === newHost){
             console.log("Name exists");
             return
         }

@@ -5,6 +5,7 @@ import { InfoIcon } from "lucide-react";
 import { redirect } from "next/navigation";
 import getUser from "@/pages/api/getUser";
 import { addHost, removeHost } from "@/pages/api/userNetwork";
+import { getStationsFromOwner } from "@/pages/api/hostNetwork";
 
 
 export default async function ProtectedPage() {
@@ -18,10 +19,27 @@ export default async function ProtectedPage() {
     return redirect("/sign-in");
   }
 
-  addHost(user.id, "testHost")
+  removeHost(user.id, "GM")
   let user_data = await getUser(user.id)
-  console.log(user_data)
+  let stations : any[] = []
+  
+  if (user_data && user_data.data) {    
+    for (let name in user_data.data.names) {
+      let station = await getStationsFromOwner(user_data.data.names[name])
+      if (station){
+      for (let s of station) {
+        stations.push(s)
+      }
+    }
+      // stations.push(station)
+    }
+  } else {
+    console.error("Error fetching user data:", user_data?.error);
+  }
 
+  // let stations = await getStationsFromOwner("Tesla")
+  // console.log(user_data)
+  console.log(stations)
   return (
     <div className="flex-1 w-full flex flex-col gap-12">
       <div className="w-full">
