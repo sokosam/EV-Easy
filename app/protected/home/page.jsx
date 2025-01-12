@@ -279,11 +279,7 @@ function Page() {
       {/* Render Map */}
       {position && stations && <Map currentLocation={position} stations={stations} />}
       {loading && (
-        <div className="buffer">
-          {Array.from({ length: 12 }).map((_, index) => (
-            <div key={index}></div>
-          ))}
-        </div>
+        <p>Loading...</p>
       )}
     </div>
   );
